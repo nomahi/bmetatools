@@ -1,4 +1,4 @@
-bayespv <- function(y, se, B1 = 5000, B2 = 25000){
+reldist <- function(y, se, B1 = 5000, B2 = 25000){
 
 	K <- length(y)   # number of studies
 	is2 <- 1/(se*se)
@@ -38,25 +38,33 @@ bayespv <- function(y, se, B1 = 5000, B2 = 25000){
 
 
 
-	# Bayesian p-value
+	# Relative distance and standardized residuals
 
-	tn.1 <- mean(out.1[,3])
-	Vtn.1 <- var(out.1[,3])
-
-	P <- numeric(K)
+	RD <- STR <- numeric(K)
 
 	for(i in 1:K) {
-
-		y.i_new <- rnorm((B2-B1),out.1[,3],se[i])
   
-		D.i <- (y[i] - tn.1)^2/Vtn.1
-		D.i_new <- (y.i_new - tn.1)^2/Vtn.1
-	
-		P[i] <- mean(D.i < D.i_new)
+		rmadata <- list(y = y[-i], is2 = is2[-i], K = K-1)
 
+		rmaout.i <- bugs(data = rmadata, inits = rmainits, parameters.to.save = c("mu", 
+			"tau2", "theta.new"), model.file = rmamodel.1, n.chains = 1, n.iter = B2, n.burnin=B1)
+	
+		out.i <- rmaout.i$sims.matrix	# posterior samples
+	
+		mu.i <- mean(out.i[,1])
+	
+		tn.i <- mean(out.i[,3])
+		stn.i <- sd(out.i[,3])
+	
+		RD[i] <- abs((y[i] - mu.i)/mu.i)
+		STR[i] <- (y[i] - tn.i)/stn.i
+
+		Q1 <- paste0("The leave-one-out analysis for study ", i, " is completed.")
+		print(Q1)
+	
 	}
 
-	R1 <- data.frame(study=1:K,pvalue=P)
+	R1 <- data.frame(study=1:K,RD=RD,STR=STR)
 	return(R1)
 	
 }

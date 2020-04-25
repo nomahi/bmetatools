@@ -19,6 +19,7 @@ smm_t2 <- function(y, se, B1 = 5000, B2 = 25000){
 	## Priors
 	mu ~ dnorm(0, 0.0001)
 	it2 ~ dgamma(0.01, 0.01)
+	tau2 <- 1/it2
 		
 	# predictive distribution
 	theta.new ~ dnorm(mu, it2)
@@ -35,7 +36,7 @@ smm_t2 <- function(y, se, B1 = 5000, B2 = 25000){
 	}
 
 	rmaout.3 <- bugs(data = rmadata, inits = rmainits, parameters.to.save = c("lambda", "mu", 
-    "it2", "theta.new"), model.file = rmamodel.3, n.chains = 1, n.iter = B2, n.burnin=B1)
+    "tau2", "theta.new"), model.file = rmamodel.3, n.chains = 1, n.iter = B2, n.burnin=B1)
 	
 	out.3 <- rmaout.3$sims.matrix	# posterior samples
 
