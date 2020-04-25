@@ -1,0 +1,13 @@
+Package: bmetatools
+Type: Package
+Title: Bayesian analysis tools for meta-analysis
+Version: 1.0.0
+Date: 2020-04-26
+Author: Hisashi Noma, Yuta Hamaguchi and Yuki Matsushima
+Maintainer: Hisashi Noma <noma@ism.ac.jp>
+Description: Bayesian analysis tools for meta-analysis.
+Depends:
+  R2OpenBUGS, meta
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
