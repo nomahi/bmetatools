@@ -19,5 +19,3 @@ Other analysis tools will be added in future.
 # install.packages("devtools")
 devtools::install_github("nomahi/bmetatools")
 ```
-
-Downloads: [please see the release page](https://github.com/nomahi/bmetatools/releases)
