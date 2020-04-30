@@ -35,6 +35,8 @@ reldist <- function(y, se, B1 = 5000, B2 = 25000){
 		"tau2", "theta.new"), model.file = rmamodel.1, n.chains = 1, n.iter = B2, n.burnin=B1)
 	
 	out.1 <- rmaout.1$sims.matrix	# posterior samples
+	
+	mu.1 <- mean(out.1[,1])
 
 
 
@@ -56,7 +58,7 @@ reldist <- function(y, se, B1 = 5000, B2 = 25000){
 		tn.i <- mean(out.i[,3])
 		stn.i <- sd(out.i[,3])
 	
-		RD[i] <- abs((y[i] - mu.i)/mu.i)
+		RD[i] <- abs((mu.1 - mu.i)/mu.1)
 		STR[i] <- (y[i] - tn.i)/stn.i
 
 		Q1 <- paste0("The leave-one-out analysis for study ", i, " is completed.")
