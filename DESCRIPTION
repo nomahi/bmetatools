@@ -7,7 +7,7 @@ Author: Hisashi Noma, Yuta Hamaguchi and Yuki Matsushima
 Maintainer: Hisashi Noma <noma@ism.ac.jp>
 Description: Bayesian analysis tools for meta-analysis.
 Depends:
-  R2OpenBUGS, meta
+  R2OpenBUGS, meta, doSNOW, doParallel
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
