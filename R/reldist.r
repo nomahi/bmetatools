@@ -1,7 +1,10 @@
-reldist <- function(y, se, B1 = 5000, B2 = 25000){
+reldist <- function(y, se, B1 = 5000, B2 = 25000, Cores=detectCores()){
 
 	K <- length(y)   # number of studies
 	is2 <- 1/(se*se)
+	
+	cl <- makeSOCKcluster(Cores)
+	registerDoSNOW(cl)
 	
 	# BUGS model code
 
@@ -42,10 +45,10 @@ reldist <- function(y, se, B1 = 5000, B2 = 25000){
 
 	# Relative distance and standardized residuals
 
-	RD <- STR <- numeric(K)
+	opts <- list(progress = function(x) print(paste0("The leave-one-out analysis for study ", x, " is completed.")))
 
-	for(i in 1:K) {
-  
+ 	R1 <- foreach(i = 1:K, .combine = rbind, .packages=c("MASS","R2OpenBUGS"), .options.snow = opts) %dopar% {
+ 
 		rmadata <- list(y = y[-i], is2 = is2[-i], K = K-1)
 
 		rmaout.i <- bugs(data = rmadata, inits = rmainits, parameters.to.save = c("mu", 
@@ -58,15 +61,13 @@ reldist <- function(y, se, B1 = 5000, B2 = 25000){
 		tn.i <- mean(out.i[,3])
 		stn.i <- sd(out.i[,3])
 	
-		RD[i] <- abs((mu.1 - mu.i)/mu.1)
-		STR[i] <- (y[i] - tn.i)/stn.i
+		RD <- abs((mu.1 - mu.i)/mu.1)
+		STR <- (y[i] - tn.i)/stn.i
 
-		Q1 <- paste0("The leave-one-out analysis for study ", i, " is completed.")
-		print(Q1)
+		c(i,RD,STR)
 	
 	}
-
-	R1 <- data.frame(study=1:K,RD=RD,STR=STR)
+	
 	return(R1)
 	
 }
